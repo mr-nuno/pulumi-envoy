@@ -9,14 +9,6 @@ services:
       - ./envoy.yaml:/etc/envoy/envoy.yaml
     networks:
       - envoy-net
-  envoy-gateway:
-    image: envoyproxy/gateway-dev:latest
-    ports:
-      - "8080:8080"
-    networks:
-      - envoy-net
-    depends_on:
-      - envoy
   backend1:
     build: ./backend-service
     image: backend-service:latest

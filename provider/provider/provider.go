@@ -8,14 +8,12 @@ import (
 
 // Config defines provider-level configuration for authenticating with Loopia.
 type Config struct {
-	Token    string `pulumi:"token" provider:"secret"` // Envoy Gateway API token (secret)
-	Endpoint string `pulumi:"endpoint"`                // Envoy Gateway API endpoint
+	Path string `pulumi:"path" provider:"secret"` // Path for generated configuration file
 }
 
 // Annotate adds descriptions to provider config fields for documentation and codegen.
 func (c *Config) Annotate(a infer.Annotator) {
-	a.Describe(&c.Token, "Envoy Gateway API token.")
-	a.Describe(&c.Endpoint, "Envoy Gateway API endpoint")
+	a.Describe(&c.Path, "Path to Envoy configuration file.")
 }
 
 // NewProvider constructs a Pulumi provider using the given client factory.

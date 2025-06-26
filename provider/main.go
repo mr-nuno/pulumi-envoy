@@ -10,7 +10,7 @@ import (
 
 // main is the entry point for the Pulumi Loopia DNS provider binary.
 func main() {
-	prov, err := provider.NewProvider(provider.RealClientFactory)
+	prov, err := provider.NewProvider()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s", err.Error())
 		os.Exit(1)

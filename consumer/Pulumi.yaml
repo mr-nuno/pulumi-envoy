@@ -1,8 +1,18 @@
-name: envoy-consumer
+name: use-envoy
+description: A minimal Pulumi YAML program
 runtime: yaml
-description: A simple Pulumi YAML program using the local Envoy provider
+plugins:
+  providers:
+    - name: envoy
+      path: ../provider
 resources:
-  example:
-    type: provider:index:ExampleResource
+  provider:
+    type: pulumi:providers:envoy
     properties:
-      message: Hello from Envoy Provider!
+      path: ./demo
+  cluster:
+    type: envoy:provider:EnvoyCluster
+    properties:
+      name: demo
+      type: demo
+
