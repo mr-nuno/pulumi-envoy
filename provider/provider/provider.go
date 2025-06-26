@@ -1,8 +1,6 @@
 package provider
 
 import (
-	"context"
-
 	p "github.com/pulumi/pulumi-go-provider"
 	"github.com/pulumi/pulumi-go-provider/infer"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/tokens"
@@ -20,11 +18,8 @@ func (c *Config) Annotate(a infer.Annotator) {
 	a.Describe(&c.Endpoint, "Envoy Gateway API endpoint")
 }
 
-// ClientFactory is a function that creates a Client from provider config.
-type ClientFactory func(ctx context.Context, config Config) (Client, error)
-
 // NewProvider constructs a Pulumi provider using the given client factory.
-func NewProvider(factory ClientFactory) (p.Provider, error) {
+func NewProvider() (p.Provider, error) {
 	return infer.NewProviderBuilder().
 		WithNamespace("envoy").
 		WithConfig(infer.Config(&Config{})).
