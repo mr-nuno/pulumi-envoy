@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  envoy:
+    image: envoyproxy/envoy:v1.29-latest
+    ports:
+      - "9901:9901" # Admin interface
+      - "10000:10000" # Example listener
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - envoy-net
+  envoy-gateway:
+    image: envoyproxy/gateway-dev:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - envoy-net
+networks:
+  envoy-net:
+    driver: bridge

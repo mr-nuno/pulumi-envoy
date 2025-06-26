@@ -1,0 +1,8 @@
+name: envoy-consumer
+runtime: yaml
+description: A simple Pulumi YAML program using the local Envoy provider
+resources:
+  example:
+    type: provider:index:ExampleResource
+    properties:
+      message: Hello from Envoy Provider!
