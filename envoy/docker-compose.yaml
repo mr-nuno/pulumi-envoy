@@ -16,8 +16,6 @@ services:
     environment:
       - INSTANCE_NAME=backend1
       - INSTANCE_PORT=8081
-    ports:
-      - "8081:8081"
     networks:
       - envoy-net
   backend2:
@@ -25,8 +23,6 @@ services:
     environment:
       - INSTANCE_NAME=backend2
       - INSTANCE_PORT=8082
-    ports:
-      - "8082:8082"
     networks:
       - envoy-net
 networks:
