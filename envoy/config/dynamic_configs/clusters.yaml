@@ -1,0 +1,30 @@
+version_info: "1" # A version string. Envoy will update when this changes.
+resources:
+- "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+  name: backend1_cluster
+  connect_timeout: 0.25s
+  type: STRICT_DNS # Docker service names are resolved via DNS
+  lb_policy: ROUND_ROBIN
+  load_assignment:
+    cluster_name: backend1_cluster
+    endpoints:
+    - lb_endpoints:
+      - endpoint:
+          address:
+            socket_address:
+              address: backend1 # This resolves to the 'backend1' Docker service
+              port_value: 8081
+- "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+  name: backend2_cluster
+  connect_timeout: 0.25s
+  type: STRICT_DNS
+  lb_policy: ROUND_ROBIN
+  load_assignment:
+    cluster_name: backend2_cluster
+    endpoints:
+    - lb_endpoints:
+      - endpoint:
+          address:
+            socket_address:
+              address: backend2 # This resolves to the 'backend2' Docker service
+              port_value: 8082

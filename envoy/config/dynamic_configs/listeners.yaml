@@ -1,0 +1,27 @@
+version_info: "1" # A version string. Envoy will update when this changes.
+resources:
+- "@type": type.googleapis.com/envoy.config.listener.v3.Listener
+  name: http_listener
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 8080
+  filter_chains:
+  - filters:
+    - name: envoy.filters.network.http_connection_manager
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+        stat_prefix: ingress_http
+        rds:
+          config_source:
+            path_config_source:
+              path: /etc/envoy/dynamic_configs/routes.yaml
+              watched_directory:
+                path: /etc/envoy/dynamic_configs/
+            resource_api_version: V3
+          route_config_name: web_service_routes
+        http_filters:
+        - name: envoy.filters.http.router
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router

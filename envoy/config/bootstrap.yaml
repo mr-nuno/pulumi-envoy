@@ -1,0 +1,25 @@
+admin:
+  access_log_path: /dev/stdout
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 19000
+
+node:
+  id: file-xds-node-1
+  cluster: my-service-mesh
+
+dynamic_resources:
+  lds_config:
+    path_config_source:
+      path: /etc/envoy/dynamic_configs/listeners.yaml
+      watched_directory:
+        path: /etc/envoy/dynamic_configs/
+    resource_api_version: V3
+  cds_config:
+    path_config_source:
+      path: /etc/envoy/dynamic_configs/clusters.yaml
+      watched_directory:
+        path: /etc/envoy/dynamic_configs/
+    resource_api_version: V3

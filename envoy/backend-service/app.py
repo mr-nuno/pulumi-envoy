@@ -54,4 +54,4 @@ def index():
     return render_template_string(HTML, instance=instance)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=int(os.environ.get("INSTANCE_PORT", 8080)))

@@ -1,0 +1,22 @@
+version_info: "1" # A version string. Envoy will update when this changes.
+resources:
+- "@type": type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+  name: web_service_routes # This name must match `route_config_name` in listeners.yaml
+  virtual_hosts:
+  - name: all_domains
+    domains: ["*"] # Match all hostnames
+    routes:
+    - match:
+        prefix: "/backend1" # Route requests to /backend1
+      route:
+        cluster: backend1_cluster
+        prefix_rewrite: "/"
+    - match:
+        prefix: "/backend2" # Route requests to /backend2
+      route:
+        cluster: backend2_cluster
+        prefix_rewrite: "/"
+    - match:
+        prefix: "/" # Default route for everything else, send to backend1
+      route:
+        cluster: backend1_cluster
