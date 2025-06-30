@@ -8,12 +8,12 @@ import (
 
 // Config defines provider-level configuration for authenticating with Loopia.
 type Config struct {
-	Path string `pulumi:"path" provider:"secret"` // Path for generated configuration file
+	OutputPath string `pulumi:"outputPath" provider:"secret"` // Path for generated configuration file
 }
 
 // Annotate adds descriptions to provider config fields for documentation and codegen.
 func (c *Config) Annotate(a infer.Annotator) {
-	a.Describe(&c.Path, "Path to Envoy configuration file.")
+	a.Describe(&c.OutputPath, "Path to Envoy configuration file.")
 }
 
 // NewProvider constructs a Pulumi provider using the given client factory.

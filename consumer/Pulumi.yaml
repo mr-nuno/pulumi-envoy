@@ -6,10 +6,6 @@ plugins:
     - name: envoy
       path: ../provider
 resources:
-  provider:
-    type: pulumi:providers:envoy
-    properties:
-      path: ./demo
   cluster:
     type: envoy:provider:EnvoyCluster
     properties:
