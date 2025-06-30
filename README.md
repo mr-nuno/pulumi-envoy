@@ -92,7 +92,6 @@ resources:
 
 - Add new resources by creating a new file in `provider/` and following the pattern in existing resources.
 - Update the provider registration in `provider.go` to include your new resource.
-- See the [Envoy API docs](https://www.envoyproxy.io/docs/envoy/latest/api/) for available resource types.
 
 ---
 
