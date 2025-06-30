@@ -1,42 +1,41 @@
 # pulumi-envoy
 
-This repository provides a complete example of building, running, and consuming a custom Pulumi provider for Envoy Gateway configuration.
+This repository provides a complete example of building, running, and consuming a custom Pulumi provider for Envoy configuration using file-based dynamic xDS (LDS, CDS, RDS) and Docker Compose.
 
 ## Project Structure
 
-- **envoy/**: Minimal working Envoy and Envoy Gateway setup using Docker Compose.
-  - `docker-compose.yaml`: Runs Envoy and Envoy Gateway containers.
-  - `envoy.yaml`: Minimal Envoy configuration.
-- **provider/**: Pulumi provider for Envoy Gateway configuration (Go, REST API).
+- **envoy/**: Minimal working Envoy setup using Docker Compose and file-based dynamic configuration.
+  - `docker-compose.yaml`: Runs Envoy and backend containers.
+  - `config/bootstrap.yaml`: Envoy bootstrap config, points to dynamic config files.
+  - `config/dynamic_configs/`: Folder for dynamic xDS config files (listeners.yaml, clusters.yaml, routes.yaml).
+- **provider/**: Pulumi provider for Envoy configuration (Go, file-based xDS).
   - Implements resources for Envoy routes, clusters, and listeners.
-  - Uses provider config for `endpoint` (Envoy Gateway API URL) and `token` (API bearer token).
-  - Communicates with Envoy Gateway via REST endpoints (e.g., `/v1/routes`, `/v1/clusters`).
+  - Uses provider config for `outputPath` (directory for generated config files).
   - See `provider/README.md` for development and extension details.
 - **consumer/**: Example Pulumi YAML program using the local Envoy provider.
-  - `Pulumi.yaml`: Minimal Pulumi YAML using the provider.
+  - `Pulumi.yaml`: Minimal Pulumi YAML using the provider and file-based config.
 
 ---
 
 ## Quick Start
 
-### 1. Envoy & Envoy Gateway Setup
+### 1. Envoy Setup
 
 ```sh
 cd envoy
-# Start Envoy and Envoy Gateway
+# Start Envoy and backend services
 docker-compose up
 ```
 
 - The admin interface is available at [http://localhost:9901](http://localhost:9901)
-- The Envoy Gateway API is available at [http://localhost:8080](http://localhost:8080)
+- The HTTP proxy is available at [http://localhost:8080](http://localhost:8080)
 
 ### 2. Provider Development
 
 - The provider is implemented in Go using [`pulumi-go-provider`](https://github.com/pulumi/pulumi-go-provider).
-- Resources supported: **Route**, **Cluster**, **Listener** (CRUD via REST).
+- Resources supported: **Route**, **Cluster**, **Listener** (CRUD via file-based xDS).
 - Provider config:
-  - `endpoint`: Envoy Gateway API URL (default: `http://localhost:8080`)
-  - `token`: Bearer token for Envoy Gateway (if required)
+  - `outputPath`: Directory for generated Envoy config files (e.g., `./demo`)
 
 #### Build the Provider
 
@@ -54,6 +53,13 @@ make
 ### 3. Consumer Example
 
 - See `consumer/Pulumi.yaml` for a minimal Pulumi YAML program using the provider.
+- Set the provider config for the stack (e.g., in `Pulumi.dev.yaml`):
+
+```yaml
+config:
+  envoy:outputPath: ./demo
+```
+
 - Run the example:
 
 ```sh
@@ -65,25 +71,19 @@ pulumi up
 
 ## Provider Features
 
-- Written in Go using [`pulumi-go-provider`](https://github.com/pulumi/pulumi-go-provider).
-- Supports Envoy Gateway REST API for configuration.
-- Resources: **Route**, **Cluster**, **Listener** (CRUD via REST).
+- Written in Go using [`pulumi-go-provider`](https://github.com/pulumi/pulumi-go-provider`).
+- Supports file-based dynamic xDS configuration for Envoy (LDS, CDS, RDS).
+- Resources: **Route**, **Cluster**, **Listener** (CRUD via file generation).
 - Easily extensible for more Envoy resources.
 - Example resource configuration:
 
 ```yaml
 resources:
-  my-route:
-    type: envoy:index:Route
+  cluster:
+    type: envoy:provider:EnvoyCluster
     properties:
-      name: example-route
-      cluster: example-cluster
-      prefix: "/api"
-  my-cluster:
-    type: envoy:index:Cluster
-    properties:
-      name: example-cluster
-      type: logical_dns
+      name: demo
+      type: demo
 ```
 
 ---
@@ -92,13 +92,45 @@ resources:
 
 - Add new resources by creating a new file in `provider/` and following the pattern in existing resources.
 - Update the provider registration in `provider.go` to include your new resource.
-- See the [Envoy Gateway API docs](https://gateway.envoyproxy.io/latest/api/) for available endpoints and resource types.
+- See the [Envoy API docs](https://www.envoyproxy.io/docs/envoy/latest/api/) for available resource types.
+
+---
+
+## Generating a .NET SDK for the Provider
+
+You can generate a .NET SDK for your Pulumi provider using the `pulumi-gen-dotnet` tool. This allows you to consume your provider from C#, F#, or VB.NET Pulumi programs.
+
+### Prerequisites
+- Ensure you have the provider schema (`schema.json`) generated and available in your provider directory.
+- Install the Pulumi .NET SDK generator if you haven't already:
+  ```sh
+  go install github.com/pulumi/pulumi/pkg/v3/cmd/pulumi-gen-dotnet@latest
+  ```
+
+### Generate the SDK
+From the root of your provider directory, run:
+
+```sh
+pulumi-gen-dotnet --out sdk/dotnet/
+```
+
+- This will generate the .NET SDK in the `sdk/dotnet/` directory.
+- The generator reads your `schema.json` and produces C# classes and types for all your provider resources and functions.
+
+### Using the SDK
+- You can reference the generated SDK in your .NET Pulumi projects by adding it as a project reference or packaging it as a NuGet package.
+- Example usage in C#:
+  ```csharp
+  using Pulumi;
+  using Pulumi.Envoy;
+  // ...
+  ```
 
 ---
 
 ## References
 
-- [Envoy Gateway](https://gateway.envoyproxy.io/)
+- [Envoy Proxy](https://www.envoyproxy.io/)
 - [Pulumi Go Provider](https://github.com/pulumi/pulumi-go-provider)
 - [Pulumi Documentation](https://www.pulumi.com/docs/)
 
